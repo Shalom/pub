@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Investment Projection</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .section-header {
+            background-color: #f8f9fa;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .section-content {
+            padding: 20px;
+        }
+        .inputs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inputs-table th, .inputs-table td {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+        .inputs-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .graph-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            background-color: white;
+        }
+        .plotly-graph {
+            width: 100%;
+            min-height: 500px;
+        }
+        .toggle-button {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+
+        /* Sticky table styles */
+        .sticky-table-container {
+            overflow-x: auto;
+            position: relative;
+            margin: 20px 0;
+        }
+
+        .sticky-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        /* Sticky Year column - both header and data cells */
+        .sticky-table thead th:first-child,
+        .sticky-table tbody th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 2;
+            border-right: 2px solid #dee2e6;
+            box-shadow: 2px 0 5px -2px rgba(0,0,0,0.1);
+        }
+
+        /* Header styling for Year column */
+        .sticky-table thead th:first-child {
+            background-color: white !important;
+            text-align: center !important;
+            z-index: 3;  /* Higher z-index to stay on top */
+        }
+
+        /* Alternating row colors with opaque backgrounds for Year column */
+        .sticky-table tbody tr:nth-child(odd) th:first-child {
+            background-color: white !important;
+        }
+
+        .sticky-table tbody tr:nth-child(even) th:first-child {
+            background-color: #f8f9fa !important;
+        }
+
+        /* Rest of the table styling */
+        .sticky-table td, .sticky-table th {
+            padding: 12px;
+            border: 1px solid #dee2e6;
+        }
+
+        .sticky-table td:not(:first-child) {
+            text-align: right;
+        }
+
+        /* Alternating row colors for the rest of the table */
+        .sticky-table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .sticky-table tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+
+        .graph-description {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .graph-description ul {
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Real Estate Investment Projection</h1>
+
+        <!-- Input Parameters Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleVisibility('inputsContent')">
+                <h2 class="h4 mb-0">Input Parameters</h2>
+                <button class="toggle-button" id="inputsToggleBtn">Hide</button>
+            </div>
+            <div class="section-content" id="inputsContent">
+                <table class="inputs-table">
+                    
+                    <tr>
+                        <th>--- Analysis Parameters ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Projection Period</th>
+                        <td>20 Years</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Purchase Price</th>
+                        <td>$410,000</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Down Payment</th>
+                        <td>30.0% ($123,000)</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Closing Costs</th>
+                        <td>$4,500</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Loan Amount</th>
+                        <td>$287,000</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Cash Outlay</th>
+                        <td>$127,500</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Loan ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Interest Rate</th>
+                        <td>7.100%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Loan Term</th>
+                        <td>30 Years</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Monthly P&amp;I</th>
+                        <td>$1,929</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Refinance ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Refinance Year</th>
+                        <td>2</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Refinance Interest Rate</th>
+                        <td>6.100%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Refinance Costs (% of Bal)</th>
+                        <td>1.3% (~$3,694 in Year 2)</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Income &amp; Growth ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Monthly Rent</th>
+                        <td>$2,350</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Annual Rent Growth</th>
+                        <td>2.5%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Annual Appreciation</th>
+                        <td>3.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Vacancy Rate</th>
+                        <td>4.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Operating Expenses ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Annual Property Tax</th>
+                        <td>$3,640</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Annual Insurance</th>
+                        <td>$1,963</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Initial Monthly HOA Dues</th>
+                        <td>$100</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Property Management Fee (% GPR)</th>
+                        <td>7.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Maintenance (% EGI)</th>
+                        <td>4.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Avg. Annual Leasing/Turnover Cost</th>
+                        <td>$350</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Avg. Annual Utilities (Vacancy)</th>
+                        <td>$120</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Annual OpEx Growth</th>
+                        <td>3.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Depreciation ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Land Value % of Purchase</th>
+                        <td>15.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Depreciation Period</th>
+                        <td>27.5 Years</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Depreciable Basis (Est.)</th>
+                        <td>$352,325</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Annual Depreciation</th>
+                        <td>$12,812</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Tax Parameters ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>PAL Limitation Active</th>
+                        <td>Yes</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Marginal Tax Rate</th>
+                        <td>32.0%</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>--- Exit Costs ---</th>
+                        <td></td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Realtor Commission</th>
+                        <td>5.0% of sale price</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Additional Selling Costs</th>
+                        <td>3.0% of sale price</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Total Exit Costs</th>
+                        <td>8.0% of sale price</td>
+                    </tr>
+                    
+                </table>
+            </div>
+        </div>
+
+        <!-- Projection Tables Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleVisibility('tableContent')">
+                <h2 class="h4 mb-0">Projection Details</h2>
+                <button class="toggle-button" id="tableToggleBtn">Hide</button>
+            </div>
+            <div class="section-content" id="tableContent">
+                <div class="sticky-table-container">
+                    <table class="sticky-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th class="year-header">Y</th>
+      <th>Gross Potential Rent</th>
+      <th>Vacancy Loss</th>
+      <th>Effective Gross Income (EGI)</th>
+      <th>Property Taxes</th>
+      <th>Insurance</th>
+      <th>HOA Dues</th>
+      <th>Property Management</th>
+      <th>Repairs &amp; Maint.</th>
+      <th>Leasing/Turnover</th>
+      <th>Utilities (Vacancy)</th>
+      <th>Total Operating Expenses</th>
+      <th>Net Operating Income (NOI)</th>
+      <th>Annual P&amp;I</th>
+      <th>Refinance Costs</th>
+      <th>Total Debt Service/Costs</th>
+      <th>Pre-Tax Cash Flow</th>
+      <th>Interest Paid</th>
+      <th>Depreciation</th>
+      <th>Taxable Income/(Loss)</th>
+      <th>Tax Savings/(Liability)*</th>
+      <th>After-Tax Cash Flow</th>
+      <th>Principal Paid</th>
+      <th>Property Value</th>
+      <th>Loan Balance (EOY)</th>
+      <th>Total Equity</th>
+      <th>Cap Rate (%)</th>
+      <th>Cash-on-Cash Return (%)</th>
+      <th>Total Return on Equity (%)</th>
+      <th>Annual Equity Gain</th>
+      <th>Net Position (CF + Equity)</th>
+      <th>Tax Loss Carryforward</th>
+      <th>Cumulative Loss Carryforward</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>$28,200</td>
+      <td>$-1,128</td>
+      <td>$27,072</td>
+      <td>$3,640</td>
+      <td>$1,963</td>
+      <td>$1,200</td>
+      <td>$1,974</td>
+      <td>$1,083</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$10,330</td>
+      <td>$16,742</td>
+      <td>$23,145</td>
+      <td>0.0%</td>
+      <td>$23,145</td>
+      <td>$-6,403</td>
+      <td>$20,285</td>
+      <td>$12,812</td>
+      <td>$-16,355</td>
+      <td>$0</td>
+      <td>$-6,403</td>
+      <td>$2,860</td>
+      <td>$422,300</td>
+      <td>$284,140</td>
+      <td>$138,160</td>
+      <td>4.0%</td>
+      <td>-5.0%</td>
+      <td>7.1%</td>
+      <td>$12,300</td>
+      <td>$5,897</td>
+      <td>$16,355</td>
+      <td>$16,355</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>$28,905</td>
+      <td>$-1,156</td>
+      <td>$27,749</td>
+      <td>$3,749</td>
+      <td>$2,022</td>
+      <td>$1,236</td>
+      <td>$2,023</td>
+      <td>$1,110</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$10,610</td>
+      <td>$17,138</td>
+      <td>$20,915</td>
+      <td>$3,694</td>
+      <td>$24,608</td>
+      <td>$-7,470</td>
+      <td>$17,231</td>
+      <td>$12,812</td>
+      <td>$-12,904</td>
+      <td>$0</td>
+      <td>$-7,470</td>
+      <td>$3,684</td>
+      <td>$434,969</td>
+      <td>$280,456</td>
+      <td>$154,513</td>
+      <td>3.9%</td>
+      <td>-5.9%</td>
+      <td>6.4%</td>
+      <td>$12,669</td>
+      <td>$5,199</td>
+      <td>$12,904</td>
+      <td>$29,259</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>$29,628</td>
+      <td>$-1,185</td>
+      <td>$28,443</td>
+      <td>$3,862</td>
+      <td>$2,083</td>
+      <td>$1,273</td>
+      <td>$2,074</td>
+      <td>$1,138</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$10,899</td>
+      <td>$17,544</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-3,371</td>
+      <td>$17,000</td>
+      <td>$12,812</td>
+      <td>$-12,268</td>
+      <td>$0</td>
+      <td>$-3,371</td>
+      <td>$3,915</td>
+      <td>$448,018</td>
+      <td>$276,541</td>
+      <td>$171,477</td>
+      <td>3.9%</td>
+      <td>-2.6%</td>
+      <td>8.8%</td>
+      <td>$13,049</td>
+      <td>$9,678</td>
+      <td>$12,268</td>
+      <td>$41,527</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>$30,368</td>
+      <td>$-1,215</td>
+      <td>$29,154</td>
+      <td>$3,978</td>
+      <td>$2,145</td>
+      <td>$1,311</td>
+      <td>$2,126</td>
+      <td>$1,166</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$11,196</td>
+      <td>$17,958</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-2,957</td>
+      <td>$16,754</td>
+      <td>$12,812</td>
+      <td>$-11,608</td>
+      <td>$0</td>
+      <td>$-2,957</td>
+      <td>$4,161</td>
+      <td>$461,459</td>
+      <td>$272,381</td>
+      <td>$189,078</td>
+      <td>3.9%</td>
+      <td>-2.3%</td>
+      <td>8.5%</td>
+      <td>$13,441</td>
+      <td>$10,484</td>
+      <td>$11,608</td>
+      <td>$53,135</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>$31,128</td>
+      <td>$-1,245</td>
+      <td>$29,882</td>
+      <td>$4,097</td>
+      <td>$2,209</td>
+      <td>$1,351</td>
+      <td>$2,179</td>
+      <td>$1,195</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$11,501</td>
+      <td>$18,381</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-2,533</td>
+      <td>$16,493</td>
+      <td>$12,812</td>
+      <td>$-10,923</td>
+      <td>$0</td>
+      <td>$-2,533</td>
+      <td>$4,422</td>
+      <td>$475,302</td>
+      <td>$267,959</td>
+      <td>$207,343</td>
+      <td>3.9%</td>
+      <td>-2.0%</td>
+      <td>8.3%</td>
+      <td>$13,844</td>
+      <td>$11,311</td>
+      <td>$10,923</td>
+      <td>$64,058</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>$31,906</td>
+      <td>$-1,276</td>
+      <td>$30,629</td>
+      <td>$4,220</td>
+      <td>$2,276</td>
+      <td>$1,391</td>
+      <td>$2,233</td>
+      <td>$1,225</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$11,815</td>
+      <td>$18,814</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-2,100</td>
+      <td>$16,216</td>
+      <td>$12,812</td>
+      <td>$-10,213</td>
+      <td>$0</td>
+      <td>$-2,100</td>
+      <td>$4,699</td>
+      <td>$489,561</td>
+      <td>$263,260</td>
+      <td>$226,301</td>
+      <td>3.8%</td>
+      <td>-1.6%</td>
+      <td>8.1%</td>
+      <td>$14,259</td>
+      <td>$12,159</td>
+      <td>$10,213</td>
+      <td>$74,271</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>$32,703</td>
+      <td>$-1,308</td>
+      <td>$31,395</td>
+      <td>$4,346</td>
+      <td>$2,344</td>
+      <td>$1,433</td>
+      <td>$2,289</td>
+      <td>$1,256</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$12,138</td>
+      <td>$19,257</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-1,658</td>
+      <td>$15,921</td>
+      <td>$12,812</td>
+      <td>$-9,476</td>
+      <td>$0</td>
+      <td>$-1,658</td>
+      <td>$4,994</td>
+      <td>$504,248</td>
+      <td>$258,266</td>
+      <td>$245,982</td>
+      <td>3.8%</td>
+      <td>-1.3%</td>
+      <td>8.0%</td>
+      <td>$14,687</td>
+      <td>$13,029</td>
+      <td>$9,476</td>
+      <td>$83,747</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>$33,521</td>
+      <td>$-1,341</td>
+      <td>$32,180</td>
+      <td>$4,477</td>
+      <td>$2,414</td>
+      <td>$1,476</td>
+      <td>$2,346</td>
+      <td>$1,287</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$12,471</td>
+      <td>$19,710</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-1,205</td>
+      <td>$15,608</td>
+      <td>$12,812</td>
+      <td>$-8,710</td>
+      <td>$0</td>
+      <td>$-1,205</td>
+      <td>$5,307</td>
+      <td>$519,376</td>
+      <td>$252,959</td>
+      <td>$266,416</td>
+      <td>3.8%</td>
+      <td>-0.9%</td>
+      <td>7.8%</td>
+      <td>$15,127</td>
+      <td>$13,922</td>
+      <td>$8,710</td>
+      <td>$92,456</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>$34,359</td>
+      <td>$-1,374</td>
+      <td>$32,985</td>
+      <td>$4,611</td>
+      <td>$2,487</td>
+      <td>$1,520</td>
+      <td>$2,405</td>
+      <td>$1,319</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$12,812</td>
+      <td>$20,172</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-742</td>
+      <td>$15,275</td>
+      <td>$12,812</td>
+      <td>$-7,914</td>
+      <td>$0</td>
+      <td>$-742</td>
+      <td>$5,640</td>
+      <td>$534,957</td>
+      <td>$247,319</td>
+      <td>$287,638</td>
+      <td>3.8%</td>
+      <td>-0.6%</td>
+      <td>7.7%</td>
+      <td>$15,581</td>
+      <td>$14,839</td>
+      <td>$7,914</td>
+      <td>$100,371</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>$35,218</td>
+      <td>$-1,409</td>
+      <td>$33,809</td>
+      <td>$4,749</td>
+      <td>$2,561</td>
+      <td>$1,566</td>
+      <td>$2,465</td>
+      <td>$1,352</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$13,164</td>
+      <td>$20,645</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$-269</td>
+      <td>$14,921</td>
+      <td>$12,812</td>
+      <td>$-7,087</td>
+      <td>$0</td>
+      <td>$-269</td>
+      <td>$5,994</td>
+      <td>$551,006</td>
+      <td>$241,326</td>
+      <td>$309,680</td>
+      <td>3.7%</td>
+      <td>-0.2%</td>
+      <td>7.6%</td>
+      <td>$16,049</td>
+      <td>$15,779</td>
+      <td>$7,087</td>
+      <td>$107,458</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>$36,098</td>
+      <td>$-1,444</td>
+      <td>$34,654</td>
+      <td>$4,892</td>
+      <td>$2,638</td>
+      <td>$1,613</td>
+      <td>$2,527</td>
+      <td>$1,386</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$13,526</td>
+      <td>$21,129</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$214</td>
+      <td>$14,545</td>
+      <td>$12,812</td>
+      <td>$-6,228</td>
+      <td>$0</td>
+      <td>$214</td>
+      <td>$6,370</td>
+      <td>$567,536</td>
+      <td>$234,956</td>
+      <td>$332,580</td>
+      <td>3.7%</td>
+      <td>0.2%</td>
+      <td>7.5%</td>
+      <td>$16,530</td>
+      <td>$16,744</td>
+      <td>$6,228</td>
+      <td>$113,686</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>$37,001</td>
+      <td>$-1,480</td>
+      <td>$35,521</td>
+      <td>$5,039</td>
+      <td>$2,717</td>
+      <td>$1,661</td>
+      <td>$2,590</td>
+      <td>$1,421</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$13,898</td>
+      <td>$21,623</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$708</td>
+      <td>$14,145</td>
+      <td>$12,812</td>
+      <td>$-5,334</td>
+      <td>$0</td>
+      <td>$708</td>
+      <td>$6,769</td>
+      <td>$584,562</td>
+      <td>$228,186</td>
+      <td>$356,376</td>
+      <td>3.7%</td>
+      <td>0.6%</td>
+      <td>7.4%</td>
+      <td>$17,026</td>
+      <td>$17,734</td>
+      <td>$5,334</td>
+      <td>$119,020</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>$37,926</td>
+      <td>$-1,517</td>
+      <td>$36,409</td>
+      <td>$5,190</td>
+      <td>$2,799</td>
+      <td>$1,711</td>
+      <td>$2,655</td>
+      <td>$1,456</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$14,281</td>
+      <td>$22,128</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$1,214</td>
+      <td>$13,720</td>
+      <td>$12,812</td>
+      <td>$-4,404</td>
+      <td>$0</td>
+      <td>$1,214</td>
+      <td>$7,194</td>
+      <td>$602,099</td>
+      <td>$220,992</td>
+      <td>$381,107</td>
+      <td>3.7%</td>
+      <td>1.0%</td>
+      <td>7.3%</td>
+      <td>$17,537</td>
+      <td>$18,750</td>
+      <td>$4,404</td>
+      <td>$123,424</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>$38,874</td>
+      <td>$-1,555</td>
+      <td>$37,319</td>
+      <td>$5,345</td>
+      <td>$2,883</td>
+      <td>$1,762</td>
+      <td>$2,721</td>
+      <td>$1,493</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$14,674</td>
+      <td>$22,645</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$1,730</td>
+      <td>$13,269</td>
+      <td>$12,812</td>
+      <td>$-3,436</td>
+      <td>$0</td>
+      <td>$1,730</td>
+      <td>$7,645</td>
+      <td>$620,162</td>
+      <td>$213,347</td>
+      <td>$406,815</td>
+      <td>3.7%</td>
+      <td>1.4%</td>
+      <td>7.2%</td>
+      <td>$18,063</td>
+      <td>$19,793</td>
+      <td>$3,436</td>
+      <td>$126,860</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>$39,846</td>
+      <td>$-1,594</td>
+      <td>$38,252</td>
+      <td>$5,506</td>
+      <td>$2,969</td>
+      <td>$1,815</td>
+      <td>$2,789</td>
+      <td>$1,530</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$15,079</td>
+      <td>$23,173</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$2,258</td>
+      <td>$12,789</td>
+      <td>$12,812</td>
+      <td>$-2,429</td>
+      <td>$0</td>
+      <td>$2,258</td>
+      <td>$8,125</td>
+      <td>$638,767</td>
+      <td>$205,221</td>
+      <td>$433,545</td>
+      <td>3.6%</td>
+      <td>1.8%</td>
+      <td>7.1%</td>
+      <td>$18,605</td>
+      <td>$20,863</td>
+      <td>$2,429</td>
+      <td>$129,289</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>$40,842</td>
+      <td>$-1,634</td>
+      <td>$39,208</td>
+      <td>$5,671</td>
+      <td>$3,058</td>
+      <td>$1,870</td>
+      <td>$2,859</td>
+      <td>$1,568</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$15,496</td>
+      <td>$23,712</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$2,798</td>
+      <td>$12,280</td>
+      <td>$12,812</td>
+      <td>$-1,379</td>
+      <td>$0</td>
+      <td>$2,798</td>
+      <td>$8,635</td>
+      <td>$657,930</td>
+      <td>$196,587</td>
+      <td>$461,343</td>
+      <td>3.6%</td>
+      <td>2.2%</td>
+      <td>7.1%</td>
+      <td>$19,163</td>
+      <td>$21,961</td>
+      <td>$1,379</td>
+      <td>$130,668</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>$41,863</td>
+      <td>$-1,675</td>
+      <td>$40,189</td>
+      <td>$5,841</td>
+      <td>$3,150</td>
+      <td>$1,926</td>
+      <td>$2,930</td>
+      <td>$1,608</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$15,925</td>
+      <td>$24,264</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$3,349</td>
+      <td>$11,738</td>
+      <td>$12,812</td>
+      <td>$-286</td>
+      <td>$0</td>
+      <td>$3,349</td>
+      <td>$9,177</td>
+      <td>$677,668</td>
+      <td>$187,410</td>
+      <td>$490,257</td>
+      <td>3.6%</td>
+      <td>2.6%</td>
+      <td>7.0%</td>
+      <td>$19,738</td>
+      <td>$23,087</td>
+      <td>$286</td>
+      <td>$130,954</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>$42,910</td>
+      <td>$-1,716</td>
+      <td>$41,193</td>
+      <td>$6,016</td>
+      <td>$3,245</td>
+      <td>$1,983</td>
+      <td>$3,004</td>
+      <td>$1,648</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$16,366</td>
+      <td>$24,828</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$3,913</td>
+      <td>$11,162</td>
+      <td>$12,812</td>
+      <td>$853</td>
+      <td>$0</td>
+      <td>$3,913</td>
+      <td>$9,752</td>
+      <td>$697,998</td>
+      <td>$177,658</td>
+      <td>$520,340</td>
+      <td>3.6%</td>
+      <td>3.1%</td>
+      <td>6.9%</td>
+      <td>$20,330</td>
+      <td>$24,243</td>
+      <td>0.0%</td>
+      <td>$130,954</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>$43,982</td>
+      <td>$-1,759</td>
+      <td>$42,223</td>
+      <td>$6,197</td>
+      <td>$3,342</td>
+      <td>$2,043</td>
+      <td>$3,079</td>
+      <td>$1,689</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$16,819</td>
+      <td>$25,404</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$4,489</td>
+      <td>$10,551</td>
+      <td>$12,812</td>
+      <td>$2,041</td>
+      <td>$0</td>
+      <td>$4,489</td>
+      <td>$10,364</td>
+      <td>$718,937</td>
+      <td>$167,294</td>
+      <td>$551,644</td>
+      <td>3.5%</td>
+      <td>3.5%</td>
+      <td>6.9%</td>
+      <td>$20,940</td>
+      <td>$25,429</td>
+      <td>0.0%</td>
+      <td>$130,954</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>$45,082</td>
+      <td>$-1,803</td>
+      <td>$43,279</td>
+      <td>$6,383</td>
+      <td>$3,442</td>
+      <td>$2,104</td>
+      <td>$3,156</td>
+      <td>$1,731</td>
+      <td>$350</td>
+      <td>$120</td>
+      <td>$17,286</td>
+      <td>$25,993</td>
+      <td>$20,915</td>
+      <td>0.0%</td>
+      <td>$20,915</td>
+      <td>$5,078</td>
+      <td>$9,900</td>
+      <td>$12,812</td>
+      <td>$3,280</td>
+      <td>$0</td>
+      <td>$5,078</td>
+      <td>$11,014</td>
+      <td>$740,506</td>
+      <td>$156,280</td>
+      <td>$584,226</td>
+      <td>3.5%</td>
+      <td>4.0%</td>
+      <td>6.8%</td>
+      <td>$21,568</td>
+      <td>$26,646</td>
+      <td>0.0%</td>
+      <td>$130,954</td>
+    </tr>
+  </tbody>
+</table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Graphs Section -->
+        <div class="section">
+            <div class="section-header" onclick="toggleVisibility('graphsContent')">
+                <h2 class="h4 mb-0">Analysis Graphs</h2>
+                <button class="toggle-button" id="graphsToggleBtn">Hide</button>
+            </div>
+            <div class="section-content" id="graphsContent">
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Cash Flow Analysis</h3>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="cbb36cb9-0047-4946-b7b6-60cd3f23f836" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("cbb36cb9-0047-4946-b7b6-60cd3f23f836")) {                    Plotly.newPlot(                        "cbb36cb9-0047-4946-b7b6-60cd3f23f836",                        [{"line":{"color":"#2E86C1"},"mode":"lines+markers","name":"Pre-Tax Cash Flow","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"FMPpIqkCucBYGThKAC69wBBFqe4AVqrAcBc0Xn8Zp8AAfEenccqjwKBHqrZxaKDAMIgh1y7mmcAAppsc8dOSwMColxujMofAgGAgnMzVcMAAz\u002fESXMRqQEA2T6cgI4ZAgFhuwIX2kkDg9qjeWgibQPAxc70BpKFAmKNhFjzbpUBA28s1WyqqQEA8rlHgka5AmLtxkieJsUCkp+b8FtazQA=="},"type":"scatter"},{"line":{"color":"#28B463"},"mode":"lines+markers","name":"NOI (Net Operating Income)","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"4XoUrodZ0EAwCKwcmrzQQO6nxkvlIdFAok3VfXWJ0UAQ4bI0V\u002fPRQJyHxjKXX9JADbgpfELO0kAwFtJXZj\u002fTQEoTv1AQs9NADk8rN04p1EAutMEhLqLUQEJK1m6+HdVAGLaixQ2c1UD+X4YXKx3WQM42SqElodZAAwVo7Awo10D4S1XQ8LHXQBiY0XPhPthAdj84Tu\u002fO2EB5etUoK2LZQA=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Cash Flow Analysis"},"xaxis":{"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"title":{"text":"Amount ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"height":500,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Property Value & Equity</h3>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="b2b9c61f-d984-4c51-9b16-1809bc75c8e2" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("b2b9c61f-d984-4c51-9b16-1809bc75c8e2")) {                    Plotly.newPlot(                        "b2b9c61f-d984-4c51-9b16-1809bc75c8e2",                        [{"line":{"color":"#8E44AD"},"mode":"lines+markers","name":"Property Value","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AAAAAHDGGUEAAAAAZIwaQXsUrkdIWBtBqFfKckoqHEEWp1p7mQIdQXa7LMRl4R1BSfSoI+HGHkFLQ\u002fjuPrMfQfravwJaUyBBThdabrvQIEFJeSTG31EhQVPjXe3j1iFBYrQgpeVfIkFRpQqTA+0iQeDDF0hdfiNB\u002fhOyRxMUJEGia\u002fcOR64kQb4pNxwbTSVBPHWp9rLwJUHfvWE2M5kmQQ=="},"type":"scatter"},{"line":{"color":"#F1C40F"},"mode":"lines+markers","name":"Total Equity","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"DDZdMX3dAEH4KhdKhNwCQYaUXM6k7gRBMDiF8q0UB0Fo0TnueE8JQcKCVIbpnwtBVXi3nu4GDkErKEpqwUIQQZAz05BWjhFBnBF1xMDmEkHP7rHmkEwUQRwEyRlfwBVBSOUXJ8tCF0GGvXvrfNQYQcuVD8okdhpBlX6qJXwoHEHGkIbhRewdQUQ0gOlOwh9Bqv4xYbfVIEHyYGQRRNQhQQ=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Property Value & Equity Growth"},"xaxis":{"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"title":{"text":"Amount ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"height":500,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Operating Expenses Breakdown</h3>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="13a2063f-c103-440b-9996-9e260b9c64b3" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("13a2063f-c103-440b-9996-9e260b9c64b3")) {                    Plotly.newPlot(                        "13a2063f-c103-440b-9996-9e260b9c64b3",                        [{"name":"Property Taxes","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AAAAAABwrEBnZmZmZkqtQDIIrBxaK65AFXmSdA0Tr0D1lych2gCwQMy9EfTBe7BA7sAmsVn6sEDreaqpvXyxQEwcWwgLA7JAoHH311+NskDqL\u002fcJ2xuzQDvsdn2crrNA4TVZBsVFtEBgcp50duG0QMQe9ZvTgbVAXyeEWwAntkATFPGlIdG2QK3Uo4ldgLdAlAZKOds0uEBCm5sUw+64QA=="},"type":"bar"},{"name":"Insurance","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AAAAAACsnkDD9Shcj5efQHP5D+kXRaBAA+\u002fk0wvCoECVXO5hv0KhQHtkMF1Px6FAYOLIbNlPokCHeJEbfNyiQBCO9N5WbaNAhsX2HYoCpECmfnY4N5ykQHMCo46AOqVAFQWtiIndpUDgNbKedoWmQAOj5WBtMqdAEMT2f5Tkp0CBDLnVE5yoQNf1DW4UWalAx38TkMAbqkBANJnHQ+SqQA=="},"type":"bar"},{"name":"HOA Dues","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AAAAAADAkkAAAAAAAFCTQLgehetR5JNAuY0G8BZ9lEBqT8k5cRqVQAkchfuDvJVAmftDdnNjlkCgV34BZQ+XQCJVdRN\u002fwJdAIVXNSel2mEBTiGpyzDKZQImRkZRS9JlAbEFO+qa7mkDyhSI69oibQAu4\u002f0BuXJxAr4KMXD42nUCRr7lFlxaeQGU3qCur\u002fZ5A2wXjvq3rn0AOenceanCgQA=="},"type":"bar"},{"name":"Property Management","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AQAAAADYnkBmZmZmZp2fQEfhehTeM6BAT42XbpCboEA9V1tx2gWhQATTMLTMcqFAfguyOHjioUCUGFBt7lSiQMqyCzBByqJA3DA\u002f0YJCo0DhXnoWxr2jQD+hcD0ePKRAe9j5\u002fp69pEDjfSaSXEKlQDt0Z69ryqVAVgrKk+FVpkD\u002fsEgE1OSmQJ\u002foMFFZd6dAb+6eWYgNqEBktA+PeKeoQA=="},"type":"bar"},{"name":"Repairs & Maint.","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"7FG4HoXrkEAqhxbZzleRQCXkg57NxpFAcWN6wpI4kkBUDFcHMK2SQNWfH6G3JJNA1ANaODyfk0CG3fXs0ByUQNzPSFmJnZRADtUdlXkhlUCVLdg4tqiVQOphqmBUM5ZAkdfhr2nBlkDzfEdUDFOXQEUTlglT6JdAjaAGHVWBmEDEl\u002fNwKh6ZQFtIk4DrvplAKirKY7FjmkBqnhXTlQybQA=="},"type":"bar"},{"name":"Leasing\u002fTurnover","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"i2","bdata":"XgFeAV4BXgFeAV4BXgFeAV4BXgFeAV4BXgFeAV4BXgFeAV4BXgFeAQ=="},"type":"bar"},{"name":"Utilities (Vacancy)","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"i1","bdata":"eHh4eHh4eHh4eHh4eHh4eHh4eHg="},"type":"bar"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Operating Expenses Breakdown"},"xaxis":{"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"title":{"text":"Amount ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"barmode":"stack","height":500,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Loan Balance & Equity</h3>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="ca6412f1-cde3-4645-a10a-7ad5e21ca835" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("ca6412f1-cde3-4645-a10a-7ad5e21ca835")) {                    Plotly.newPlot(                        "ca6412f1-cde3-4645-a10a-7ad5e21ca835",                        [{"line":{"color":"#E74C3C"},"mode":"lines+markers","name":"Loan Balance","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"+mRRZ7FXEUGEavTaIR4RQTjKf+D14BBBkLuHefOfEEFivj0E3VoQQRV6AgFxERBBPXCaqNOGD0FANlwJ++AOQckEWem6MA5BATp+MGx1DUGGBy5LXa4MQROF5YHR2gtB+QZTRgD6CkE3GjN1FAsKQerjP4wrDQlBzlJz01T\u002fB0H8jNB4kOAGQXE+3J3OrwVBSdrdVe5rBEG0c\u002fWTvBMDQQ=="},"type":"scatter","xaxis":"x","yaxis":"y"},{"line":{"color":"#3498DB"},"mode":"lines+markers","name":"Debt-to-Equity Ratio","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"vaI+Ue9zAEC\u002fZ4Jzqwr9P6AvQ5Slzfk\u002fV1\u002fHeJkM9z9x3vwLdK30Pwz601jznPI\u002fkrMtJ4\u002fM8D86HIidNmLuP\u002fvxRWi5g+s\u002f5iiQr87v6D\u002fj0XaIWJvmPyJAaz5PfeQ\u002fjk4fjkmO4j\u002fcCzK5I8jgP2dORh95S94\u002fvcvwtoRF2z85bHPoFnfYP98pOPru2dU\u002fv7UIUq5o0z9Z6tDqsR7RPw=="},"type":"scatter","xaxis":"x","yaxis":"y2"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"xaxis":{"anchor":"y","domain":[0.0,0.94],"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"anchor":"x","domain":[0.0,1.0],"title":{"text":"Loan Balance ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"yaxis2":{"anchor":"x","overlaying":"y","side":"right","title":{"text":"Debt-to-Equity Ratio"}},"title":{"text":"Loan Balance & Leverage Analysis"},"height":500,"hovermode":"x unified"},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Passive Activity Loss Analysis</h3>
+                    <div class="graph-description">
+                        This graph shows the tax loss carryforward when PAL limitations are active:
+                        <ul>
+                            <li>Orange line: Cumulative tax losses carried forward</li>
+                            <li>Blue bars: Annual tax losses</li>
+                        </ul>
+                        These losses may be deductible in future years when you have passive income 
+                        or when you dispose of the property in a fully taxable transaction.
+                    </div>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="dda1a1cc-cebb-469a-ba12-55902fd48c35" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("dda1a1cc-cebb-469a-ba12-55902fd48c35")) {                    Plotly.newPlot(                        "dda1a1cc-cebb-469a-ba12-55902fd48c35",                        [{"line":{"color":"#E67E22","width":2},"mode":"lines+markers","name":"Cumulative Loss Carryforward","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"bQzQNWrxz0AMbR\u002f\u002fu5LcQF\u002frYGnYRuRAjVoPVtfx6UDNi7\u002f0REfvQGLYbRLzIfJAICg7Mixy9EAw9HbPh5L2QAmS7ewpgfhAUO4ZXx88+kDp4bV9XMH7QAsQHMG7Dv1A6Ss7Svwh\u002fkAAgMZTwPj+QE5LOouLkP9Ab+0zUMHm\u002f0Bj1IXYovj\u002fQGPUhdii+P9AY9SF2KL4\u002f0Bj1IXYovj\u002fQA=="},"type":"scatter"},{"marker":{"color":"rgba(52, 152, 219, 0.5)"},"name":"Annual Tax Loss","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"bQzQNWrxz0CrzW7IDTTJQGPTRKfp9cdAt7y5svurxkD\u002fxMB6tlXFQNiTcMCE8sNA9H1q\u002fsiBwkB9YN7p3ALBQI7dadch6r5AdsTFIlevu0CQOb\u002fp0VO4QCbiYjb01bRA4r3xkQg0sUDUgmoxgdiqQLhpee5m+aJAQIhoPnGNlUDA8+ZRiOFxQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=="},"type":"bar"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"title":{"text":"Passive Activity Loss Carryforward Analysis"},"xaxis":{"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"title":{"text":"Amount ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"height":500,"hovermode":"x unified","showlegend":true,"barmode":"overlay"},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+                
+                <div class="graph-container">
+                    <h3 class="h5 mb-3">Investment Position Analysis</h3>
+                    <div class="graph-description">
+                        This graph shows the cumulative financial position over time:
+                        <ul>
+                            <li>Red line: Cumulative Cash Flow (money in/out of pocket)</li>
+                            <li>Green line: Cumulative Equity Gain (property value increase)</li>
+                            <li>Blue line: Cumulative Net Position (total financial benefit)</li>
+                            <li>Purple dotted line: Net Position minus all selling costs (8.0% of property value)</li>
+                        </ul>
+                        Break-even points are marked where applicable.
+                    </div>
+                    <div class="plotly-graph">
+                        <div>                        <script type="text/javascript">window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.0.1.min.js"></script>                <div id="edcc1151-b07c-404c-98e1-40d17bff0693" class="plotly-graph-div" style="height:500px; width:100%;"></div>            <script type="text/javascript">                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("edcc1151-b07c-404c-98e1-40d17bff0693")) {                    Plotly.newPlot(                        "edcc1151-b07c-404c-98e1-40d17bff0693",                        [{"line":{"color":"#E74C3C"},"mode":"lines+markers","name":"Cumulative Cash Flow","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"FMPpIqkCucA27pC2VBjLwL2fHXnq1tDAqyLkZBq608ArEs2ZaDPWwB9botB2QNjAonMUvtne2cACLt7PGAzbwEjruuitxdvAymwrGwUJ3MAsiQVjfNPbwHoPy11jItvA8inEAfvy2cCEmtlTdULYwEY0Kxz1DdbA0\u002f9emY1S08BrhKUyQg3QwMZ531AMdsjA9DdND\u002fFiv8CgIM0ktBmnwA=="},"type":"scatter"},{"line":{"color":"#2ECC71"},"mode":"lines+markers","name":"Cumulative Equity Gain","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"AAAAAAAGyEAAAAAAQGLYQNijcD1CkOJAQL1SllMg6UCwONXay+LvQNjtshCXbPNAJNGjjoQC90AsDeG7+7P6QNDX\u002fhXQgf5AOF1ouW02AUEk5ZEY\u002fzoDQUyNd7UPTwVBiNGClBZzB0FElSpMjqcJQYAPXyD17AtB+E\u002fIHs1DDkFE1+4dTlYQQXxTbjj2kxFBeOpS7SXbEkG+e8NsJiwUQQ=="},"type":"scatter"},{"line":{"color":"#3498DB","width":3},"mode":"lines+markers","name":"Cumulative Net Position","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"7DwW3VYJt0DKEW9JK6zFQPOnwwGaSdRA1VfBx4yG3kCar+6NF8nkQCCuFLnyuOpAO7QeH86K8ECrgemH9fDzQP4c0JtkkPdAPt8FLJpq+0D+Z2IYH4H\u002fQF0rvknD6gFBSkxKNLc0BEH0Ya+hP58GQfio2Xw2KwlB\u002fm+ca3vZC0H7\u002fYj186oOQa5X59VF0BBBmLUVKZpdEkF94XkE8\u002f0TQQ=="},"type":"scatter"},{"line":{"color":"#8E44AD","dash":"dot","width":3},"mode":"lines+markers","name":"Net Position After 8.0% Selling Costs","x":{"dtype":"i1","bdata":"AQIDBAUGBwgJCgsMDQ4PEBESExQ="},"y":{"dtype":"f8","bdata":"xXC6SKo728CXi\u002faiSyXXwKZp5AWFbc3ArJQvQX0atsDg52fji8CxQDRy6rpVZc5AjlCYREHG2kDzHzQvKZjjQO8rlkg3O+pAsF8o25Kn8EAs5+4ocWv0QB5AQEO3avhAYC9r6u+m\u002fECnxngW2JAAQbqna9ZL7gJB1nNjc6hsBUHRvIu9yAwIQXHfYDyNzwpBZGQoVdy1DUHKCjc5UWAQQQ=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"shapes":[{"line":{"color":"gray","dash":"dash"},"opacity":0.5,"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"}],"title":{"text":"Cumulative Investment Position Analysis (Including Selling Costs)"},"xaxis":{"title":{"text":"Year"},"dtick":2,"range":[0.5,20.5]},"yaxis":{"title":{"text":"Amount ($)"},"tickformat":"$,","hoverformat":"$,.0f"},"height":500,"hovermode":"x unified","showlegend":true,"annotations":[{"arrowhead":1,"showarrow":true,"text":"Net Position\u003cbr\u003eBreak Even\u003cbr\u003eYear 1","x":1,"y":5897.3393110178695},{"arrowhead":1,"showarrow":true,"text":"Net After Selling Costs\u003cbr\u003eBreak Even\u003cbr\u003eYear 5","x":5,"y":4544.546438688383}]},                        {"responsive": true}                    )                };            </script>        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            Report generated on: 2025-05-07 19:56:11
+        </footer>
+    </div>
+
+    <script>
+        function toggleVisibility(contentId) {
+            const content = document.getElementById(contentId);
+            const button = content.parentElement.querySelector('.toggle-button');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                button.textContent = 'Hide';
+            } else {
+                content.classList.add('hidden');
+                button.textContent = 'Show';
+            }
+        }
+    </script>
+</body>
+</html>
